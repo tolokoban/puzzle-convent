@@ -1,0 +1,52 @@
+.view-ConventFloorView {
+    display: grid;
+    place-items: center;
+    --size: calc(100vmax * 0.3);
+    --inner-size: calc(var(--size) * 0.7);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-size: calc(var(--inner-size) * 0.2);
+}
+
+@media (orientation: portrait) {
+    .view-ConventFloorView {
+        height: var(--size);
+        width: auto;
+    }
+}
+
+@media (orientation: landscape) {
+    .view-ConventFloorView {
+        width: var(--size);
+        height: auto;
+    }
+}
+
+.view-ConventFloorView > div {
+    display: grid;
+    place-items: center;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: var(--inner-size);
+    height: var(--inner-size);
+}
+
+.view-ConventFloorView > div > div {
+    color: oldlace;
+    text-shadow: 0.1em 0.1em 0.1em #000;
+    cursor: pointer;
+    transition: 0.3s color;
+}
+
+.view-ConventFloorView > div > div:hover {
+    color: #fdb;
+}
+
+.view-ConventFloorView > div > div.total {
+    font-size: 80%;
+    color: #000a;
+    text-shadow: none;
+    pointer-events: none;
+    cursor: default;
+}

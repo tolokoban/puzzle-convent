@@ -1,0 +1,32 @@
+.view-AppView {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0;
+    overflow: hidden;
+}
+
+@media (orientation: portrait) {
+    .view-AppView {
+        flex-direction: column;
+    }
+}
+
+@media (orientation: landscape) {
+    .view-AppView {
+        flex-direction: row;
+    }
+}
+
+.view-AppView > * {
+    flex: 0 0 auto;
+}
+
+.view-AppView > .fill {
+    flex: 0 0 auto;
+}
