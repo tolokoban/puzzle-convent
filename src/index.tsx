@@ -3,18 +3,29 @@ import './index.css'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+import CompassPng from './gfx/compass.png'
+import ConventGLTF from './gfx/convent.glb'
 import FloorPng from './gfx/floor.png'
 import FloorWebp from './gfx/floor.webp'
+import { loadGLTF, loadImage, loadTexture } from './loader'
 import { Assets } from './types'
 import AppView from './view/app'
 
 void start()
 
 async function start() {
+    const compassTexture = await loadTexture(CompassPng)
     const floorImage = await loadImage(FloorWebp, FloorPng)
+    const conventMesh = await loadGLTF(ConventGLTF)
     const assets: Assets = {
         images: {
             floor: floorImage,
+        },
+        meshes: {
+            convent: conventMesh,
+        },
+        textures: {
+            compass: compassTexture,
         },
     }
     ReactDOM.render(
@@ -36,23 +47,4 @@ function removeSplashScreen() {
 
         parent.removeChild(splash)
     }, SPLASH_VANISHING_DELAY)
-}
-
-async function loadImage(...urls: string[]): Promise<HTMLImageElement> {
-    for (const url of urls) {
-        const img = await tryToLoadImage(url)
-        if (img) return img
-    }
-    throw Error(
-        `Unable to load image from ${urls.map((url) => `"${url}"`).join(', ')}`
-    )
-}
-
-async function tryToLoadImage(url: string): Promise<HTMLImageElement | null> {
-    return new Promise<HTMLImageElement | null>((resolve) => {
-        const img = new Image()
-        img.src = url
-        img.onload = () => resolve(img)
-        img.onerror = () => resolve(null)
-    })
 }

@@ -134,7 +134,7 @@ module.exports = {
                 ],
             },
             {
-                test: /\.(png|svg|jpe?g|gif|webp)$/,
+                test: /\.(png|svg|jpe?g|gif|webp|glb|gltf)$/,
                 loader: 'url-loader',
                 options: {
                     limit: 8192,

@@ -4,65 +4,75 @@ type SerializableData =
     | number
     | string
     | SerializableData[]
-    | {[key: string]: SerializableData}
+    | { [key: string]: SerializableData }
 
 declare module 'jso'
 declare module 'markdown-to-jsx'
 
 // @see https://v4.webpack.js.org/guides/typescript/
 
-declare module "*.txt" {
+declare module '*.txt' {
     const value: string
     export default value
 }
 
-declare module "*.vert" {
+declare module '*.vert' {
     const value: string
     export default value
 }
 
-declare module "*.frag" {
+declare module '*.frag' {
     const value: string
     export default value
 }
 
-declare module "*.svg" {
+declare module '*.svg' {
     // Loaded as URL.
     const content: string
     export default content
 }
 
-declare module "*.yaml" {
+declare module '*.yaml' {
     const value: SerializableData
     export = value
 }
 
-declare module "*.png" {
+declare module '*.png' {
     const value: string
     export = value
 }
 
-declare module "*.jpg" {
+declare module '*.jpg' {
     const value: string
     export = value
 }
 
-declare module "*.jpeg" {
+declare module '*.jpeg' {
     const value: string
     export = value
 }
 
-declare module "*.gif" {
+declare module '*.gif' {
     const value: string
     export = value
 }
 
-declare module "*.webp" {
+declare module '*.webp' {
     const value: string
     export = value
 }
 
-declare module "*.css" {
+declare module '*.glb' {
+    const value: string
+    export = value
+}
+
+declare module '*.gltf' {
+    const value: string
+    export = value
+}
+
+declare module '*.css' {
     // Loaded as URL.
     const content: string
     export default content

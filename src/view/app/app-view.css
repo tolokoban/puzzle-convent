@@ -28,5 +28,43 @@
 }
 
 .view-AppView > .fill {
-    flex: 0 0 auto;
+    position: relative;
+    flex: 1 1 auto;
+}
+
+.view-AppView > .fill > footer {
+    position: absolute;
+    left: 1em;
+    right: 1em;
+    bottom: 0;
+    padding: 0.25em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 1rem 1rem 0 0;
+    background-color: #333;
+    border: 0.25em solid #642;
+    border-bottom: none;
+    box-shadow: 0 0.125em 0.125em #000 inset;
+}
+
+.view-AppView > .fill > footer > div {
+    border-radius: 999vmax;
+    padding: 0;
+    line-height: 1.5em;
+    width: 1.5em;
+    text-align: center;
+    transition: all 0.3s;
+    box-shadow: 0 0.125em 0.125em #000;
+}
+
+.view-AppView > .fill > footer > div.yes {
+    background-color: #5f3;
+    color: #000;
+}
+
+.view-AppView > .fill > footer > div.no {
+    background-color: #b00;
+    color: #fff;
 }

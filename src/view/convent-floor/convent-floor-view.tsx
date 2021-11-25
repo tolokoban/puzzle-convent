@@ -2,35 +2,27 @@ import './convent-floor-view.css'
 
 import * as React from 'react'
 
+import { Rooms } from '../../types'
+
 export interface ConventFloorViewProps {
     className?: string
     background: HTMLImageElement
+    rooms: Rooms
+    onRoomClick(this: void, index: number): void
 }
 
 export default function ConventFloorView(props: ConventFloorViewProps) {
-    const a = castDie()
-    const b = castDie()
-    const c = castDie()
-    const d = castDie()
-    const e = castDie()
-    const f = castDie()
-    const g = castDie()
-    const h = castDie()
+    const { rooms, onRoomClick } = props
+    const renderRoom = makeRenderRoom(rooms, onRoomClick)
     return (
         <div
             className={getClassNames(props)}
             style={{ backgroundImage: `url(${props.background.src})` }}
         >
             <div>
-                <div>{a}</div>
-                <div>{b}</div>
-                <div>{c}</div>
-                <div>{d}</div>
-                <div className="total">{a + b + c + d + e + f + g + h}</div>
-                <div>{e}</div>
-                <div>{f}</div>
-                <div>{g}</div>
-                <div>{h}</div>
+                {[0, 1, 2, 3].map(renderRoom)}
+                <div className="total">{sum(rooms)}</div>
+                {[4, 5, 6, 7].map(renderRoom)}
             </div>
         </div>
     )
@@ -45,7 +37,19 @@ function getClassNames(props: ConventFloorViewProps): string {
     return classNames.join(' ')
 }
 
-function castDie(): number {
-    const value = 1 + Math.floor(Math.random() * 9)
-    return value
+function makeRenderRoom(
+    rooms: Rooms,
+    onRoomClick: (this: void, index: number) => void
+) {
+    return (index: number): JSX.Element => {
+        return (
+            <div key={`room-${index}`} onClick={() => onRoomClick(index)}>
+                {rooms[index]}
+            </div>
+        )
+    }
+}
+
+function sum(rooms: Rooms): number {
+    return rooms.reduce((total: number, value: number) => total + value, 0)
 }
