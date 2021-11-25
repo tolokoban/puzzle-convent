@@ -1,4 +1,3 @@
-import { CONNREFUSED } from 'dns'
 import { useEffect, useRef } from 'react'
 import {
     AmbientLight as ThreeAmbientLight,
@@ -15,7 +14,9 @@ import {
     WebGLRenderer as ThreeWebGLRenderer,
 } from 'three'
 
+import SwipeGesture, { PanEvent, SwipeEvent } from '../../gestures/swipe'
 import { Rooms } from '../../types'
+import RotationManager from './rotation-manager'
 
 export interface Meshes {
     convent: ThreeGroup
@@ -33,6 +34,9 @@ export function useCanvas3D(
     compassTexture: ThreeTexture
 ) {
     const refPaint = useRef(EMPTY_FUNCTION)
+    const refUpdateTotals = useRef(
+        (totalN: number, totalE: number, totalS: number, totalW: number) => {}
+    )
     const [a, b, c, d, e, f, g, h] = roomsFloor1
     const [A, B, C, D, E, F, G, H] = roomsFloor2
     const totalN = a + b + c + A + B + C
@@ -43,8 +47,24 @@ export function useCanvas3D(
         const canvas = refCanvas.current
         if (!canvas) return
 
-        const paint = initScene(canvas, meshes, compassTexture)
+        const { paint, updateTotals } = initScene(
+            canvas,
+            meshes,
+            compassTexture
+        )
+        refUpdateTotals.current = updateTotals
+        const rotationManager = new RotationManager(paint)
+        const behavior = new SwipeGesture(
+            canvas,
+            rotationManager.handleStart,
+            rotationManager.handlePan,
+            rotationManager.handleSwipe
+        )
+        return () => behavior.detach()
     }, [refCanvas])
+    useEffect(() => {
+        refUpdateTotals.current(totalN, totalE, totalS, totalW)
+    }, [refUpdateTotals, totalN, totalE, totalS, totalW])
 }
 
 function initScene(
@@ -65,17 +85,31 @@ function initScene(
     scene.background = new ThreeColor('#def')
     const root = new ThreeGroup()
 
-    const textureN = makeFaceTexture(27)
+    const textureN = makeFaceTexture(0)
     const faceN = makeFace(0, textureN)
-    const textureE = makeFaceTexture(11)
+    const textureE = makeFaceTexture(1)
     const faceE = makeFace(1, textureE)
-    root.add(meshes.convent, makeCompassMesh(compassTexture), faceN, faceE)
+    const textureS = makeFaceTexture(2)
+    const faceS = makeFace(2, textureS)
+    const textureW = makeFaceTexture(3)
+    const faceW = makeFace(3, textureW)
+    faceW.material.map = makeFaceTexture(666)
+    root.add(
+        meshes.convent,
+        makeCompassMesh(compassTexture),
+        faceN,
+        faceE,
+        faceS,
+        faceW
+    )
     scene.add(root, ambientLight, directionalLight)
 
     let width = 0
     let height = 0
-
-    const paint = (time: number) => {
+    let lastAngle = 0
+    const paint = (newAngle?: number) => {
+        const angle = newAngle ?? lastAngle
+        lastAngle = angle
         if (canvas.clientWidth !== width || canvas.clientHeight !== height) {
             width = canvas.clientWidth
             height = canvas.clientHeight
@@ -85,16 +119,40 @@ function initScene(
             camera.updateProjectionMatrix()
             renderer.setSize(width, height, false)
         }
-        root.rotation.set(0, time * 0.001, 0)
+        root.rotation.set(0, angle, 0)
         renderer.render(scene, camera)
     }
-    const anim = (time: number) => {
-        window.requestAnimationFrame(anim)
-        paint(time)
-    }
-    window.requestAnimationFrame(anim)
+    window.requestAnimationFrame(() => paint())
 
-    return paint
+    let lastTotalN = 0
+    let lastTotalE = 0
+    let lastTotalS = 0
+    let lastTotalW = 0
+    const updateTotals = (
+        totalN: number,
+        totalE: number,
+        totalS: number,
+        totalW: number
+    ) => {
+        if (lastTotalN !== totalN) {
+            lastTotalN = totalN
+            faceN.material.map = makeFaceTexture(totalN)
+        }
+        if (lastTotalE !== totalE) {
+            lastTotalE = totalN
+            faceE.material.map = makeFaceTexture(totalE)
+        }
+        if (lastTotalS !== totalS) {
+            lastTotalS = totalN
+            faceS.material.map = makeFaceTexture(totalS)
+        }
+        if (lastTotalW !== totalW) {
+            lastTotalW = totalN
+            faceW.material.map = makeFaceTexture(totalW)
+        }
+        window.requestAnimationFrame(() => paint())
+    }
+    return { paint, updateTotals }
 }
 
 function makeCompassMesh(compassTexture: ThreeTexture): ThreeMesh {
@@ -116,7 +174,7 @@ function makeFace(quarter: 0 | 1 | 2 | 3, texture: ThreeTexture) {
     const x = radius * Math.sin(angle)
     const y = radius * Math.cos(angle)
     const face = new ThreeMesh(
-        new ThreePlaneGeometry(2, 2),
+        new ThreePlaneGeometry(1, 1),
         new ThreeMeshPhongMaterial({
             map: texture,
             transparent: true,
