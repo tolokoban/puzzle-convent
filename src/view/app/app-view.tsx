@@ -3,8 +3,10 @@ import './app-view.css'
 import * as React from 'react'
 
 import { Assets, Rooms } from '../../types'
+
 import Convent3DView from '../convent-3d'
 import FloorView from '../convent-floor'
+import { inputDigit } from '../../input-digit'
 
 export interface AppViewProps {
     className?: string
@@ -14,16 +16,12 @@ export interface AppViewProps {
 export default function AppView(props: AppViewProps) {
     const [roomsFloor1, setRoomsFloor1] = React.useState(makeRandomRooms())
     const [roomsFloor2, setRoomsFloor2] = React.useState(makeRandomRooms())
-    const handleRoomFloor1Click = (index: number) => {
-        const rooms: Rooms = [...roomsFloor1]
-        rooms[index] = 1 + (rooms[index] % 9)
-        setRoomsFloor1(rooms)
-    }
-    const handleRoomFloor2Click = (index: number) => {
-        const rooms: Rooms = [...roomsFloor2]
-        rooms[index] = 1 + (rooms[index] % 9)
-        setRoomsFloor2(rooms)
-    }
+    const { handleRoomFloor1Click, handleRoomFloor2Click } = makeHandlers(
+        roomsFloor1,
+        setRoomsFloor1,
+        roomsFloor2,
+        setRoomsFloor2
+    )
     const { ruleN, ruleE, ruleS, ruleW, ruleDouble, ruleTotal } = checkRules(
         roomsFloor1,
         roomsFloor2
@@ -40,23 +38,89 @@ export default function AppView(props: AppViewProps) {
                 background={props.assets.images.floor}
                 onRoomClick={handleRoomFloor2Click}
             />
-            <div className="fill">
-                <Convent3DView
-                    roomsFloor1={roomsFloor1}
-                    roomsFloor2={roomsFloor2}
-                    meshes={props.assets.meshes}
-                    compassTexture={props.assets.textures.compass}
-                />
-                <footer>
-                    <div className={ruleN ? 'yes' : 'no'}>N</div>
-                    <div className={ruleE ? 'yes' : 'no'}>E</div>
-                    <div className={ruleS ? 'yes' : 'no'}>S</div>
-                    <div className={ruleW ? 'yes' : 'no'}>W</div>
-                    <div className={ruleDouble ? 'yes' : 'no'}>x2</div>
-                    <div className={ruleTotal ? 'yes' : 'no'}>∑</div>
-                </footer>
-            </div>
+            {renderPreviewPane(
+                roomsFloor1,
+                roomsFloor2,
+                props,
+                ruleN,
+                ruleE,
+                ruleS,
+                ruleW,
+                ruleDouble,
+                ruleTotal
+            )}
         </div>
+    )
+}
+
+function makeHandlers(
+    roomsFloor1: Rooms,
+    setRoomsFloor1: React.Dispatch<React.SetStateAction<Rooms>>,
+    roomsFloor2: Rooms,
+    setRoomsFloor2: React.Dispatch<React.SetStateAction<Rooms>>
+) {
+    const handleRoomFloor1Click = async (
+        index: number,
+        x: number,
+        y: number
+    ) => {
+        const rooms: Rooms = [...roomsFloor1]
+        rooms[index] = await inputDigit(x, y)
+        setRoomsFloor1(rooms)
+    }
+    const handleRoomFloor2Click = async (
+        index: number,
+        x: number,
+        y: number
+    ) => {
+        const rooms: Rooms = [...roomsFloor2]
+        rooms[index] = await inputDigit(x, y)
+        setRoomsFloor2(rooms)
+    }
+    return { handleRoomFloor1Click, handleRoomFloor2Click }
+}
+
+function renderPreviewPane(
+    roomsFloor1: Rooms,
+    roomsFloor2: Rooms,
+    props: AppViewProps,
+    ruleN: boolean,
+    ruleE: boolean,
+    ruleS: boolean,
+    ruleW: boolean,
+    ruleDouble: boolean,
+    ruleTotal: boolean
+) {
+    return (
+        <div className="fill">
+            <Convent3DView
+                roomsFloor1={roomsFloor1}
+                roomsFloor2={roomsFloor2}
+                meshes={props.assets.meshes}
+                compassTexture={props.assets.textures.compass}
+            />
+            {renderFooter(ruleN, ruleE, ruleS, ruleW, ruleDouble, ruleTotal)}
+        </div>
+    )
+}
+
+function renderFooter(
+    ruleN: boolean,
+    ruleE: boolean,
+    ruleS: boolean,
+    ruleW: boolean,
+    ruleDouble: boolean,
+    ruleTotal: boolean
+) {
+    return (
+        <footer>
+            <div className={ruleN ? 'yes' : 'no'}>N</div>
+            <div className={ruleE ? 'yes' : 'no'}>E</div>
+            <div className={ruleS ? 'yes' : 'no'}>S</div>
+            <div className={ruleW ? 'yes' : 'no'}>W</div>
+            <div className={ruleDouble ? 'yes' : 'no'}>x2</div>
+            <div className={ruleTotal ? 'yes' : 'no'}>∑</div>
+        </footer>
     )
 }
 
@@ -70,9 +134,10 @@ function getClassNames(props: AppViewProps): string {
 }
 
 function makeRandomRooms(): Rooms {
+    const NB_DIGITS = 9
     const rooms: Rooms = [0, 0, 0, 0, 0, 0, 0, 0]
     for (let i = 0; i < rooms.length; i++) {
-        const value = 1 + Math.floor(Math.random() * 9)
+        const value = 1 + Math.floor(Math.random() * NB_DIGITS)
         rooms[i] = value
     }
     return rooms
@@ -89,16 +154,21 @@ function checkRules(
     ruleDouble: boolean
     ruleTotal: boolean
 } {
+    const SLEEPER_PER_FACE = 11
     const [a, b, c, d, e, f, g, h] = roomsFloor1
     const [A, B, C, D, E, F, G, H] = roomsFloor2
     return {
         ruleDouble:
             A + B + C + D + E + F + G + H ===
-            2 * (a + b + c + d + e + f + g + h),
-        ruleN: a + b + c + A + B + C === 11,
-        ruleE: c + e + h + C + E + H === 11,
-        ruleS: f + g + h + F + G + H === 11,
-        ruleW: a + d + f + A + D + F === 11,
+            double(a + b + c + d + e + f + g + h),
+        ruleN: a + b + c + A + B + C === SLEEPER_PER_FACE,
+        ruleE: c + e + h + C + E + H === SLEEPER_PER_FACE,
+        ruleS: f + g + h + F + G + H === SLEEPER_PER_FACE,
+        ruleW: a + d + f + A + D + F === SLEEPER_PER_FACE,
         ruleTotal: false,
     }
+}
+
+function double(value: number) {
+    return value + value
 }

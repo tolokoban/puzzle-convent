@@ -1,0 +1,24 @@
+.inputDigit-DigicodeView {
+    position: absolute;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 6px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.inputDigit-DigicodeView > button {
+    font: inherit;
+    font-size: 30px;
+    border: none;
+    background-color: oldlace;
+    color: #752;
+    text-shadow: 0.0625em 0.0625em 0.125em #000;
+    display: grid;
+    place-items: center;
+    width: 2em;
+    height: 2em;
+    cursor: pointer;
+    border-radius: 50%;
+}

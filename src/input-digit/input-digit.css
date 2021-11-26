@@ -1,0 +1,14 @@
+div.inputDigit {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    transition: background-color 0.3s;
+    z-index: 9999;
+}
+
+div.inputDigit.darken {
+    background-color: #0007;
+}
