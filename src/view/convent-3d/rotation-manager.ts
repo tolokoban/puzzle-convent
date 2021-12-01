@@ -2,12 +2,19 @@ import { PanEvent, SwipeEvent } from '../../gestures/swipe'
 
 const FACTOR = Math.PI
 
+const INITIAL_ANGLE = -0.4
+const INITIAL_SPEED = 0.001
+
 export default class RotationManager {
-    private angle = 0
-    private speed = 0
+    private angle = INITIAL_ANGLE
+
+    private speed = INITIAL_SPEED
+
     private timeStamp = 0
 
-    constructor(private readonly onChange: (angle: number) => void) {}
+    constructor(private readonly onChange: (angle: number) => void) {
+        window.requestAnimationFrame(this.anim)
+    }
 
     public fire(currentAngle: number) {
         window.requestAnimationFrame(() => this.onChange(currentAngle))

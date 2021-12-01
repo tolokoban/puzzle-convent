@@ -8,7 +8,7 @@ export interface ConventFloorViewProps {
     className?: string
     background: HTMLImageElement
     rooms: Rooms
-    onRoomClick(this: void, index: number, x: number, y: number): void
+    onRoomClick(this: void, roomIndex: number, x: number, y: number): void
 }
 
 // eslint-disable-next-line no-magic-numbers

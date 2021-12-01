@@ -1,10 +1,11 @@
 import './convent-3d-view.css'
 
 import * as React from 'react'
-import { Texture as ThreeTexture } from 'three'
+
+import { Meshes, useCanvas3D } from './convent-3d-hooks'
 
 import { Rooms } from '../../types'
-import { Meshes, useCanvas3D } from './convent-3d-hooks'
+import { Texture as ThreeTexture } from 'three'
 
 export interface Convent3dViewProps {
     className?: string

@@ -19,6 +19,8 @@ plugins:
     - '@typescript-eslint'
 rules:
     complexity: [2, { max: 20 }]
+    no-shadow-restricted-names: error
+    no-undefined: off
     no-unused-vars: off
     '@typescript-eslint/no-unused-vars':
         [1, { 'argsIgnorePattern': '^_', 'varsIgnorePattern': '^_' }]

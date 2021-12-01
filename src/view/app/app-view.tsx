@@ -7,6 +7,7 @@ import { Assets, Rooms } from '../../types'
 import Convent3DView from '../convent-3d'
 import FloorView from '../convent-floor'
 import { inputDigit } from '../../input-digit'
+import { useApplicationState } from '../../state'
 
 export interface AppViewProps {
     className?: string
@@ -14,33 +15,32 @@ export interface AppViewProps {
 }
 
 export default function AppView(props: AppViewProps) {
-    const [roomsFloor1, setRoomsFloor1] = React.useState(makeRandomRooms())
-    const [roomsFloor2, setRoomsFloor2] = React.useState(makeRandomRooms())
-    const { handleRoomFloor1Click, handleRoomFloor2Click } = makeHandlers(
-        roomsFloor1,
-        setRoomsFloor1,
-        roomsFloor2,
-        setRoomsFloor2
-    )
+    const { state, setPeopleInRoomAtFloor1, setPeopleInRoomAtFloor2 } =
+        useApplicationState()
     const { ruleN, ruleE, ruleS, ruleW, ruleDouble, ruleTotal } = checkRules(
-        roomsFloor1,
-        roomsFloor2
+        state.roomsFloor1,
+        state.roomsFloor2,
+        state.totalPeople
     )
     return (
         <div className={getClassNames(props)}>
             <FloorView
-                rooms={roomsFloor1}
+                rooms={state.roomsFloor1}
                 background={props.assets.images.floor}
-                onRoomClick={handleRoomFloor1Click}
+                onRoomClick={(roomIndex: number, x: number, y: number) =>
+                    inputNbPeople(roomIndex, x, y, setPeopleInRoomAtFloor1)
+                }
             />
             <FloorView
-                rooms={roomsFloor2}
+                rooms={state.roomsFloor2}
                 background={props.assets.images.floor}
-                onRoomClick={handleRoomFloor2Click}
+                onRoomClick={(roomIndex: number, x: number, y: number) =>
+                    inputNbPeople(roomIndex, x, y, setPeopleInRoomAtFloor2)
+                }
             />
             {renderPreviewPane(
-                roomsFloor1,
-                roomsFloor2,
+                state.roomsFloor1,
+                state.roomsFloor2,
                 props,
                 ruleN,
                 ruleE,
@@ -51,33 +51,6 @@ export default function AppView(props: AppViewProps) {
             )}
         </div>
     )
-}
-
-function makeHandlers(
-    roomsFloor1: Rooms,
-    setRoomsFloor1: React.Dispatch<React.SetStateAction<Rooms>>,
-    roomsFloor2: Rooms,
-    setRoomsFloor2: React.Dispatch<React.SetStateAction<Rooms>>
-) {
-    const handleRoomFloor1Click = async (
-        index: number,
-        x: number,
-        y: number
-    ) => {
-        const rooms: Rooms = [...roomsFloor1]
-        rooms[index] = await inputDigit(x, y)
-        setRoomsFloor1(rooms)
-    }
-    const handleRoomFloor2Click = async (
-        index: number,
-        x: number,
-        y: number
-    ) => {
-        const rooms: Rooms = [...roomsFloor2]
-        rooms[index] = await inputDigit(x, y)
-        setRoomsFloor2(rooms)
-    }
-    return { handleRoomFloor1Click, handleRoomFloor2Click }
 }
 
 function renderPreviewPane(
@@ -133,19 +106,10 @@ function getClassNames(props: AppViewProps): string {
     return classNames.join(' ')
 }
 
-function makeRandomRooms(): Rooms {
-    const NB_DIGITS = 9
-    const rooms: Rooms = [0, 0, 0, 0, 0, 0, 0, 0]
-    for (let i = 0; i < rooms.length; i++) {
-        const value = 1 + Math.floor(Math.random() * NB_DIGITS)
-        rooms[i] = value
-    }
-    return rooms
-}
-
 function checkRules(
     roomsFloor1: Rooms,
-    roomsFloor2: Rooms
+    roomsFloor2: Rooms,
+    expectedPeople: number
 ): {
     ruleN: boolean
     ruleE: boolean
@@ -165,10 +129,22 @@ function checkRules(
         ruleE: c + e + h + C + E + H === SLEEPER_PER_FACE,
         ruleS: f + g + h + F + G + H === SLEEPER_PER_FACE,
         ruleW: a + d + f + A + D + F === SLEEPER_PER_FACE,
-        ruleTotal: false,
+        ruleTotal:
+            expectedPeople ===
+            a + b + c + d + e + f + g + h + A + B + C + D + E + F + G + H,
     }
 }
 
 function double(value: number) {
     return value + value
+}
+
+async function inputNbPeople(
+    roomIndex: number,
+    x: number,
+    y: number,
+    setPeopleInRoom: (this: void, index: number, numberOfPeople: number) => void
+) {
+    const numberOfPeople = await inputDigit(x, y)
+    setPeopleInRoom(roomIndex, numberOfPeople)
 }
