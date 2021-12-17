@@ -1,11 +1,12 @@
-import './convent-floor-view.css'
+import "./convent-floor-view.css"
 
-import * as React from 'react'
+import * as React from "react"
 
-import { Rooms } from '../../types'
+import { Rooms } from "../../types"
 
 export interface ConventFloorViewProps {
     className?: string
+    total: number
     background: HTMLImageElement
     rooms: Rooms
     onRoomClick(this: void, roomIndex: number, x: number, y: number): void
@@ -19,6 +20,7 @@ const LAST_ROOMS = [4, 5, 6, 7]
 export default function ConventFloorView(props: ConventFloorViewProps) {
     const { rooms, onRoomClick } = props
     const renderRoom = makeRenderRoom(rooms, onRoomClick)
+    const total = sum(rooms)
     return (
         <div
             className={getClassNames(props)}
@@ -26,7 +28,9 @@ export default function ConventFloorView(props: ConventFloorViewProps) {
         >
             <div>
                 {FIRST_ROOMS.map(renderRoom)}
-                <div className="total">{sum(rooms)}</div>
+                <div className={`total ${total === props.total ? "ok" : ""}`}>
+                    {total}
+                </div>
                 {LAST_ROOMS.map(renderRoom)}
             </div>
         </div>
@@ -34,12 +38,12 @@ export default function ConventFloorView(props: ConventFloorViewProps) {
 }
 
 function getClassNames(props: ConventFloorViewProps): string {
-    const classNames = ['custom', 'view-ConventFloorView']
-    if (typeof props.className === 'string') {
+    const classNames = ["custom", "view-ConventFloorView"]
+    if (typeof props.className === "string") {
         classNames.push(props.className)
     }
 
-    return classNames.join(' ')
+    return classNames.join(" ")
 }
 
 function makeRenderRoom(
@@ -49,7 +53,7 @@ function makeRenderRoom(
     return (index: number): JSX.Element => (
         <div
             key={`room-${index}`}
-            onClick={(evt) => {
+            onClick={evt => {
                 const { target } = evt
                 const { left, top } = getNonStaticCorner(target as HTMLElement)
                 onRoomClick(index, evt.clientX + left, evt.clientY + top)
@@ -69,7 +73,7 @@ function getNonStaticCorner(source: HTMLElement | null): {
     top: number
 } {
     let element = source
-    while (element && window.getComputedStyle(element).position === 'static') {
+    while (element && window.getComputedStyle(element).position === "static") {
         element = element.parentElement
     }
     if (!element) return { left: 0, top: 0 }

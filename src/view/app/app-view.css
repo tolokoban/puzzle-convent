@@ -49,7 +49,8 @@
     box-shadow: 0 0.125em 0.125em #000 inset;
 }
 
-.view-AppView > .fill > footer > div {
+.view-AppView div.yes,
+.view-AppView div.no {
     border-radius: 999vmax;
     padding: 0;
     line-height: 1.5em;
@@ -59,12 +60,79 @@
     box-shadow: 0 0.125em 0.125em #000;
 }
 
-.view-AppView > .fill > footer > div.yes {
+.view-AppView div.yes {
     background-color: #5f3;
     color: #000;
 }
 
-.view-AppView > .fill > footer > div.no {
+.view-AppView div.no {
     background-color: #b00;
     color: #fff;
+}
+
+.view-AppView div.message {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0 1rem 2rem 1rem;
+    background-color: #defd;
+    overflow: auto;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+.view-AppView div.message::before,
+.view-AppView div.message::after {
+    position: fixed;
+    left: 0;
+    right: 0;
+    z-index: 9;
+    height: 2rem;
+    content: ".";
+    font-size: 0;
+    pointer-events: none;
+}
+
+.view-AppView div.message::before {
+    top: 0;
+    background-image: linear-gradient(to top, transparent, #def);
+}
+
+.view-AppView div.message::after {
+    bottom: 0;
+    background-image: linear-gradient(to top, #def, transparent);
+}
+
+.view-AppView div.message.hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.view-AppView div.message div.languages {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.view-AppView div.message div.rule {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5em;
+    font: 80%;
+    margin: 0.75rem 0;
+}
+
+.view-AppView div.message div.rule > * {
+    flex: 0 0 auto;
+}
+
+.view-AppView div.message div.rule > *:last-child {
+    flex: 1 1 auto;
 }

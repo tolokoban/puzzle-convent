@@ -27,6 +27,7 @@ rules:
     '@typescript-eslint/prefer-readonly': ['error']
     prettier/prettier: warn
     no-useless-constructor: off
+    quotes: ["warn", "double", { "avoidEscape": true }]
     sort-imports: [error, { allowSeparatedGroups: true }]
 globals:
     JSX: readonly

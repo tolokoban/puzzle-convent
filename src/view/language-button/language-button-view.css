@@ -1,0 +1,16 @@
+.view-LanguageButtonView {
+    cursor: pointer;
+    transform: scale(.9);
+    filter: brightness(.7);
+    transition: all .3s;
+}
+
+.view-LanguageButtonView.selected {
+    transform: scale(1);
+    filter: brightness(1);
+}
+
+.view-LanguageButtonView > svg {
+    width: 5rem;
+    height: 5rem;
+}

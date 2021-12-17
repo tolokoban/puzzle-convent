@@ -1,13 +1,19 @@
-import './app-view.css'
+import "./app-view.css"
 
-import * as React from 'react'
+import * as React from "react"
 
-import { Assets, Rooms } from '../../types'
+import { Assets, Rooms } from "../../types"
+import { Rules, checkRules } from "./rules"
+import { State, useApplicationState } from "../../state"
 
-import Convent3DView from '../convent-3d'
-import FloorView from '../convent-floor'
-import { inputDigit } from '../../input-digit'
-import { useApplicationState } from '../../state'
+import Convent3DView from "../convent-3d"
+import FloorView from "../convent-floor"
+import LanguageButton from "../language-button"
+import Markdown from "markdown-to-jsx"
+import { StageEnum } from "../../state/state"
+import Translate from "@/translate"
+import { inputDigit } from "../../input-digit"
+import { useLanguage } from "../../hooks/language"
 
 export interface AppViewProps {
     className?: string
@@ -15,40 +21,308 @@ export interface AppViewProps {
 }
 
 export default function AppView(props: AppViewProps) {
-    const { state, setPeopleInRoomAtFloor1, setPeopleInRoomAtFloor2 } =
-        useApplicationState()
-    const { ruleN, ruleE, ruleS, ruleW, ruleDouble, ruleTotal } = checkRules(
-        state.roomsFloor1,
-        state.roomsFloor2,
-        state.totalPeople
+    const [lang, setLang] = useLanguage(Translate)
+    const {
+        state,
+        hideInstructions,
+        showInstructions,
+        setPrisonersInRoomAtFloor1,
+        setPrisonersInRoomAtFloor2,
+        setStage,
+    } = useApplicationState()
+    const refInstructions = useRefInstructions(state)
+    const rules: Rules = useRules(state, setStage)
+    const handleCloseInstructions = makeCloseInstructionsHandler(
+        hideInstructions,
+        state,
+        setStage
     )
     return (
         <div className={getClassNames(props)}>
-            <FloorView
-                rooms={state.roomsFloor1}
-                background={props.assets.images.floor}
-                onRoomClick={(roomIndex: number, x: number, y: number) =>
-                    inputNbPeople(roomIndex, x, y, setPeopleInRoomAtFloor1)
-                }
-            />
-            <FloorView
-                rooms={state.roomsFloor2}
-                background={props.assets.images.floor}
-                onRoomClick={(roomIndex: number, x: number, y: number) =>
-                    inputNbPeople(roomIndex, x, y, setPeopleInRoomAtFloor2)
-                }
-            />
+            {renderFloors(
+                state,
+                props,
+                setPrisonersInRoomAtFloor1,
+                setPrisonersInRoomAtFloor2
+            )}
             {renderPreviewPane(
                 state.roomsFloor1,
                 state.roomsFloor2,
                 props,
-                ruleN,
-                ruleE,
-                ruleS,
-                ruleW,
-                ruleDouble,
-                ruleTotal
+                rules,
+                showInstructions
             )}
+            {renderInstructions(
+                refInstructions,
+                state,
+                rules,
+                lang,
+                setLang,
+                handleCloseInstructions
+            )}
+        </div>
+    )
+}
+
+function useRefInstructions(state: State) {
+    const refInstructions = React.useRef<HTMLDivElement | null>(null)
+    React.useEffect(() => {
+        const div = refInstructions.current
+        if (!div) return
+
+        div.scrollTo({
+            top: 0,
+            behavior: "auto",
+        })
+    }, [state.stage])
+    return refInstructions
+}
+
+function useRules(
+    state: State,
+    setStage: (this: void, stage: StageEnum) => void
+) {
+    const rules: Rules = checkRules(
+        state.roomsFloor1,
+        state.roomsFloor2,
+        state.totalPrisoners
+    )
+    React.useEffect(() => {
+        const { ruleDouble, ruleE, ruleN, ruleS, ruleTotal, ruleW } = rules
+        if (ruleDouble && ruleE && ruleN && ruleS && ruleTotal && ruleW) {
+            if (state.stage === StageEnum.FirstRound) {
+                setStage(StageEnum.FirstVictory)
+            } else if (state.stage === StageEnum.SecondRound) {
+                setStage(StageEnum.SecondVictory)
+            }
+        }
+    }, [
+        rules.ruleDouble,
+        rules.ruleE,
+        rules.ruleN,
+        rules.ruleS,
+        rules.ruleTotal,
+        rules.ruleW,
+    ])
+    return rules
+}
+
+function makeCloseInstructionsHandler(
+    closeInstructions: (this: void) => void,
+    state: State,
+    setStage: (this: void, stage: StageEnum) => void
+) {
+    return () => {
+        console.log("CLOSE")
+        closeInstructions()
+        switch (state.stage) {
+            case StageEnum.Introduction:
+                setStage(StageEnum.FirstRound)
+                break
+            case StageEnum.FirstVictory:
+                setStage(StageEnum.SecondRound)
+                break
+            default:
+            // Nothing to do.
+        }
+    }
+}
+
+function renderInstructions(
+    refInstructions: React.MutableRefObject<HTMLDivElement | null>,
+    state: State,
+    rules: Rules,
+    lang: string,
+    setLang: (language: string) => void,
+    onClose: () => void
+) {
+    const instructionsAreVisible =
+        state.showInstructions ||
+        state.stage === StageEnum.Introduction ||
+        state.stage === StageEnum.FirstVictory ||
+        state.stage === StageEnum.SecondVictory
+    return (
+        <div
+            ref={refInstructions}
+            className={`message ${instructionsAreVisible ? "show" : "hide"}`}
+        >
+            {renderLanguageSelection(lang, setLang)}
+            {renderInstructionsAccordingToStage(
+                state.stage,
+                state,
+                rules,
+                onClose
+            )}
+        </div>
+    )
+}
+
+function renderInstructionsAccordingToStage(
+    stage: StageEnum,
+    state: State,
+    rules: Rules,
+    onClose: () => void
+) {
+    switch (stage) {
+        case StageEnum.Introduction:
+            return renderIntro(onClose)
+        case StageEnum.FirstVictory:
+            return renderFirstVictory(onClose)
+        default:
+            return renderInstructionsRules(state, rules, onClose)
+    }
+}
+
+function renderInstructionsRules(
+    state: State,
+    rules: Rules,
+    onClose: () => void
+) {
+    return (
+        <>
+            {renderRulesDetails(state, rules, false)}
+            {renderRulesDetails(state, rules, true)}
+            <hr />
+            <button onClick={onClose}>{Translate.close}</button>
+            <hr />
+            <Markdown>{Translate.howToPlay}</Markdown>
+        </>
+    )
+}
+
+function renderFirstVictory(onClose: () => void): React.ReactNode {
+    return (
+        <>
+            <Markdown>{Translate.wellDone1}</Markdown>
+            <hr />
+            <button onClick={onClose}>{Translate.close}</button>
+        </>
+    )
+}
+
+function renderIntro(onClose: () => void): React.ReactNode {
+    return (
+        <>
+            <Markdown>{Translate.intro}</Markdown>
+            <hr />
+            <button onClick={onClose}>{Translate.close}</button>
+            <hr />
+            <Markdown>{Translate.howToPlay}</Markdown>
+        </>
+    )
+}
+
+function renderLanguageSelection(
+    lang: string,
+    setLang: (language: string) => void
+) {
+    return (
+        <div className="languages">
+            <LanguageButton
+                className={lang === "fr" ? "selected" : ""}
+                lang="fr"
+                label="Français"
+                onClick={setLang}
+            />
+            <LanguageButton
+                className={lang === "it" ? "selected" : ""}
+                lang="it"
+                label="Italiano"
+                onClick={setLang}
+            />
+            <LanguageButton
+                className={lang === "en" ? "selected" : ""}
+                lang="en"
+                label="English"
+                onClick={setLang}
+            />
+        </div>
+    )
+}
+
+function renderRulesDetails(
+    state: State,
+    { ruleN, ruleE, ruleS, ruleW, ruleDouble, ruleTotal }: Rules,
+    expected: boolean
+) {
+    return (
+        <>
+            {renderRuleDetail("N", Translate.ruleNorth, ruleN, expected)}
+            {renderRuleDetail("E", Translate.ruleEast, ruleE, expected)}
+            {renderRuleDetail("S", Translate.ruleSouth, ruleS, expected)}
+            {renderRuleDetail("W", Translate.ruleWest, ruleW, expected)}
+            {renderRuleDetail("x2", Translate.ruleDouble, ruleDouble, expected)}
+            {renderRuleDetail(
+                "∑",
+                Translate.ruleSum(`${state.totalPrisoners}`),
+                ruleTotal,
+                expected
+            )}
+        </>
+    )
+}
+
+function renderFloors(
+    state: State,
+    props: AppViewProps,
+    setPrisonersInRoomAtFloor1: (
+        this: void,
+        roomIndex: number,
+        numberOfPrisoners: number
+    ) => void,
+    setPrisonersInRoomAtFloor2: (
+        this: void,
+        roomIndex: number,
+        numberOfPrisoners: number
+    ) => void
+) {
+    const THREE = 3
+    const totalFloor1 = state.totalPrisoners / THREE
+    const totalFloor2 = (state.totalPrisoners + state.totalPrisoners) / THREE
+    return (
+        <>
+            <FloorView
+                total={totalFloor1}
+                rooms={state.roomsFloor1}
+                background={props.assets.images.floor}
+                onRoomClick={(roomIndex: number, x: number, y: number) =>
+                    inputNbPrisoners(
+                        roomIndex,
+                        x,
+                        y,
+                        setPrisonersInRoomAtFloor1
+                    )
+                }
+            />
+            <FloorView
+                total={totalFloor2}
+                rooms={state.roomsFloor2}
+                background={props.assets.images.floor}
+                onRoomClick={(roomIndex: number, x: number, y: number) =>
+                    inputNbPrisoners(
+                        roomIndex,
+                        x,
+                        y,
+                        setPrisonersInRoomAtFloor2
+                    )
+                }
+            />
+        </>
+    )
+}
+
+function renderRuleDetail(
+    initial: string,
+    text: string,
+    rule: boolean,
+    expected: boolean
+) {
+    if (rule !== expected) return null
+
+    return (
+        <div className="rule">
+            <div className={rule ? "yes" : "no"}>{initial}</div>
+            <Markdown>{text}</Markdown>
         </div>
     )
 }
@@ -57,12 +331,8 @@ function renderPreviewPane(
     roomsFloor1: Rooms,
     roomsFloor2: Rooms,
     props: AppViewProps,
-    ruleN: boolean,
-    ruleE: boolean,
-    ruleS: boolean,
-    ruleW: boolean,
-    ruleDouble: boolean,
-    ruleTotal: boolean
+    { ruleN, ruleE, ruleS, ruleW, ruleDouble, ruleTotal }: Rules,
+    onOpenInstruction: () => void
 ) {
     return (
         <div className="fill">
@@ -72,7 +342,15 @@ function renderPreviewPane(
                 meshes={props.assets.meshes}
                 compassTexture={props.assets.textures.compass}
             />
-            {renderFooter(ruleN, ruleE, ruleS, ruleW, ruleDouble, ruleTotal)}
+            {renderFooter(
+                ruleN,
+                ruleE,
+                ruleS,
+                ruleW,
+                ruleDouble,
+                ruleTotal,
+                onOpenInstruction
+            )}
         </div>
     )
 }
@@ -83,68 +361,40 @@ function renderFooter(
     ruleS: boolean,
     ruleW: boolean,
     ruleDouble: boolean,
-    ruleTotal: boolean
+    ruleTotal: boolean,
+    onOpenInstruction: () => void
 ) {
     return (
-        <footer>
-            <div className={ruleN ? 'yes' : 'no'}>N</div>
-            <div className={ruleE ? 'yes' : 'no'}>E</div>
-            <div className={ruleS ? 'yes' : 'no'}>S</div>
-            <div className={ruleW ? 'yes' : 'no'}>W</div>
-            <div className={ruleDouble ? 'yes' : 'no'}>x2</div>
-            <div className={ruleTotal ? 'yes' : 'no'}>∑</div>
+        <footer onClick={onOpenInstruction}>
+            <div className={ruleN ? "yes" : "no"}>N</div>
+            <div className={ruleE ? "yes" : "no"}>E</div>
+            <div className={ruleS ? "yes" : "no"}>S</div>
+            <div className={ruleW ? "yes" : "no"}>W</div>
+            <div className={ruleDouble ? "yes" : "no"}>x2</div>
+            <div className={ruleTotal ? "yes" : "no"}>∑</div>
         </footer>
     )
 }
 
 function getClassNames(props: AppViewProps): string {
-    const classNames = ['custom', 'view-AppView']
-    if (typeof props.className === 'string') {
+    const classNames = ["custom", "view-AppView"]
+    if (typeof props.className === "string") {
         classNames.push(props.className)
     }
 
-    return classNames.join(' ')
+    return classNames.join(" ")
 }
 
-function checkRules(
-    roomsFloor1: Rooms,
-    roomsFloor2: Rooms,
-    expectedPeople: number
-): {
-    ruleN: boolean
-    ruleE: boolean
-    ruleS: boolean
-    ruleW: boolean
-    ruleDouble: boolean
-    ruleTotal: boolean
-} {
-    const SLEEPER_PER_FACE = 11
-    const [a, b, c, d, e, f, g, h] = roomsFloor1
-    const [A, B, C, D, E, F, G, H] = roomsFloor2
-    return {
-        ruleDouble:
-            A + B + C + D + E + F + G + H ===
-            double(a + b + c + d + e + f + g + h),
-        ruleN: a + b + c + A + B + C === SLEEPER_PER_FACE,
-        ruleE: c + e + h + C + E + H === SLEEPER_PER_FACE,
-        ruleS: f + g + h + F + G + H === SLEEPER_PER_FACE,
-        ruleW: a + d + f + A + D + F === SLEEPER_PER_FACE,
-        ruleTotal:
-            expectedPeople ===
-            a + b + c + d + e + f + g + h + A + B + C + D + E + F + G + H,
-    }
-}
-
-function double(value: number) {
-    return value + value
-}
-
-async function inputNbPeople(
+async function inputNbPrisoners(
     roomIndex: number,
     x: number,
     y: number,
-    setPeopleInRoom: (this: void, index: number, numberOfPeople: number) => void
+    setPrisonersInRoom: (
+        this: void,
+        index: number,
+        numberOfPrisoners: number
+    ) => void
 ) {
-    const numberOfPeople = await inputDigit(x, y)
-    setPeopleInRoom(roomIndex, numberOfPeople)
+    const numberOfPrisoners = await inputDigit(x, y)
+    setPrisonersInRoom(roomIndex, numberOfPrisoners)
 }

@@ -1,0 +1,13 @@
+{
+  "close": "Fermer",
+  "how-to-play": "# Comment jouer ?\n\nTouchez une pièce sur les plans des étages pour modifier le nombre de prisonniers.\n\nFaites glisser la maison à gauche et à droite pour voir le nombre de prisonniers par face.",
+  "intro": "Tout le monde est en stress dans le pénitencier de Chèvre Rouge dont vous êtes le tout récent responsable.\n\nLe Général vient faire son inspection décennale la semaine prochaine et personne ne vous avait prévenu.  \nIl va falloir que tout soit nickel parce que le Général est plutôt tatillon.\n\nLe pénitencier a **16 chambres** réparties sur **2 étages** et contient **36 prisonniers**: **12 au premier étage** et **24 au second**.  \nPour satisfaire le Général, il faut que :\n\n* Aucune chambre ne soit vide.\n* Les 6 chambres avec vue sur le **Nord** doivent contenir **11 prisonniers** en tout.\n* Idem pour la vue au **Sub**, à l'**Est** et à l'**Ouest**.\n\nÀ vous de jouer !",
+  "rule-double": "Le **deuxième étage** doit accueillir **deux fois** plus de prisonniers que le **premier étage**.",
+  "rule-east": "Les chambres avec une fenêtre côté **Est** doivent accueillir un total de **11** prisonniers.",
+  "rule-north": "Les chambres avec une fenêtre côté **Nord** doivent accueillir un total de **11** prisonniers.",
+  "rule-south": "Les chambres avec une fenêtre côté **Sud** doivent accueillir un total de **11** prisonniers.",
+  "rule-sum": "Le nombre total de prisonniers doit être de **$1**.",
+  "rule-west": "Les chambres avec une fenêtre côté **Ouest** doivent accueillir un total de **11** prisonniers.",
+  "title": "Titre",
+  "well-done1": "# Bien joué!\n\nVous avez réussi à organiser tous les prisonniers selon les règles strictes du pénitencier.\nAucun doute que vous devriez être promu pour cela !\n\nMalheureusement, la nuit suivante, **9 prisonniers** se sont évadés à cause d'une serrure de porte cassée.\n\nVous avez fait en sorte de changer toutes les serrures pour éviter toute autre évasion,\nmais maintenant vous devez ranger les **27 prisonniers** restants dans les chambres, en suivant les mêmes règles strictes.\n\nMais dépêchez-vous, car le général arrive demain."
+}

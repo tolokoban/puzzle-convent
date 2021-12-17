@@ -1,46 +1,46 @@
-const FS = require('fs')
-const Path = require('path')
-const package = require('./package.json')
-const WorkboxPlugin = require('workbox-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CopyPlugin = require('copy-webpack-plugin')
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const FS = require("fs")
+const Path = require("path")
+const package = require("./package.json")
+const WorkboxPlugin = require("workbox-webpack-plugin")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
+const CopyPlugin = require("copy-webpack-plugin")
+const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 
-if (typeof package.port !== 'number') {
+if (typeof package.port !== "number") {
     // Define a random port number for dev server.
     package.port = 1204 + Math.floor(Math.random() * (0xffff - 1024))
     FS.writeFileSync(
-        Path.resolve(__dirname, 'package.json'),
-        JSON.stringify(package, null, '    ')
+        Path.resolve(__dirname, "package.json"),
+        JSON.stringify(package, null, "    ")
     )
-    console.log('A random port has been set for dev server:', package.port)
+    console.log("A random port has been set for dev server:", package.port)
 }
 
 module.exports = {
     output: {
-        filename: 'scr/[name].[contenthash].js',
-        path: Path.resolve(__dirname, 'build'),
+        filename: "scr/[name].[contenthash].js",
+        path: Path.resolve(__dirname, "build"),
     },
     entry: {
-        app: './src/index.tsx',
+        app: "./src/index.tsx",
     },
-    target: 'web',
+    target: "web",
     resolve: {
-        extensions: ['.tsx', '.ts', '.js', '.jsx', '.wasm'],
+        extensions: [".tsx", ".ts", ".js", ".jsx", ".wasm"],
         enforceExtension: false,
         alias: {
-            '@': Path.resolve(__dirname, 'src'),
-            react: require.resolve('react'),
+            "@": Path.resolve(__dirname, "src"),
+            react: require.resolve("react"),
         },
     },
-    devtool: 'inline-source-map',
+    devtool: "inline-source-map",
     devServer: {
         compress: true,
         static: {
-            directory: Path.resolve(__dirname, './public'),
+            directory: Path.resolve(__dirname, "./public"),
         },
         client: {
-            logging: 'verbose',
+            logging: "verbose",
             overlay: { errors: true, warnings: false },
             progress: true,
         },
@@ -49,7 +49,7 @@ module.exports = {
         open: true,
         port: process.env.PORT || package.port,
         proxy: {
-            '/tfw': 'http://localhost:7474/TP/',
+            "/tfw": "http://localhost:7474/TP/",
         },
     },
     plugins: [
@@ -61,19 +61,19 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 {
-                    from: Path.resolve(__dirname, 'public'),
-                    filter: (path) => !path.endsWith('index.html'),
+                    from: Path.resolve(__dirname, "public"),
+                    filter: path => !path.endsWith("index.html"),
                 },
             ],
         }),
         new HtmlWebpackPlugin({
             meta: {
                 viewport:
-                    'width=device-width, initial-scale=1, shrink-to-fit=no',
-                'theme-color': '#56abff',
+                    "width=device-width, initial-scale=1, shrink-to-fit=no",
+                "theme-color": "#56abff",
             },
-            template: 'public/index.html',
-            filename: 'index.html',
+            template: "public/index.html",
+            filename: "index.html",
             title: package.name,
             version: package.version,
             minify: {
@@ -93,19 +93,19 @@ module.exports = {
     ],
     optimization: {
         // Create a single runtime bundle for all chunks.
-        runtimeChunk: 'single',
+        runtimeChunk: "single",
         splitChunks: {
             // All the node_modules libs on a single file.
             cacheGroups: {
                 vendor: {
                     test: /[\\/]node_modules[\\/]/,
-                    name: 'libs',
-                    chunks: 'all',
+                    name: "libs",
+                    chunks: "all",
                 },
             },
         },
         // Prevent "libs.[contenthash].js" from changing its hash if not needed.
-        moduleIds: 'deterministic',
+        moduleIds: "deterministic",
     },
     module: {
         rules: [
@@ -113,7 +113,7 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: [
                     {
-                        loader: 'ts-loader',
+                        loader: "ts-loader",
                         options: {
                             transpileOnly: false,
                         },
@@ -125,37 +125,46 @@ module.exports = {
                 test: /\.css$/,
                 use: [
                     {
-                        loader: 'style-loader',
+                        loader: "style-loader",
                         options: {
-                            injectType: 'styleTag',
+                            injectType: "styleTag",
                         },
                     },
-                    'css-loader',
+                    "css-loader",
                 ],
             },
             {
-                test: /\.(png|svg|jpe?g|gif|webp|glb|gltf)$/,
-                loader: 'url-loader',
+                test: /\.(glb|gltf)$/,
+                loader: "url-loader",
                 options: {
                     limit: 8192,
-                    name: 'img/[name].[contenthash].[ext]',
+                    name: "msh/[name].[contenthash].[ext]",
                 },
             },
             {
-                test: /\.(woff|woff2|eot|ttf|otf)$/,
-                loader: 'file-loader',
-                options: {
-                    name: 'fnt/[contenthash].[ext]',
+                test: /\.(png|jpe?g|gif|webp|svg)$/i,
+                // More information here https://webpack.js.org/guides/asset-modules/
+                type: "asset",
+                generator: {
+                    filename: "img/[name].[hash][ext][query]",
+                },
+            },
+            {
+                test: /\.(eot|ttf|woff|woff2)$/i,
+                // More information here https://webpack.js.org/guides/asset-modules/
+                type: "asset/resource",
+                generator: {
+                    filename: "fnt/[name][ext][query]",
                 },
             },
             {
                 test: /\.ya?ml$/,
-                type: 'json',
-                use: 'yaml-loader',
+                type: "json",
+                use: "yaml-loader",
             },
             {
                 test: /\.(vert|frag|txt)$/,
-                use: 'raw-loader',
+                use: "raw-loader",
             },
         ],
     },

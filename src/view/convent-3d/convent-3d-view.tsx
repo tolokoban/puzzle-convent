@@ -1,11 +1,11 @@
-import './convent-3d-view.css'
+import "./convent-3d-view.css"
 
-import * as React from 'react'
+import * as React from "react"
 
-import { Meshes, useCanvas3D } from './convent-3d-hooks'
+import { Meshes, useCanvas3D } from "./convent-3d-hooks"
 
-import { Rooms } from '../../types'
-import { Texture as ThreeTexture } from 'three'
+import { Rooms } from "../../types"
+import { Texture as ThreeTexture } from "three"
 
 export interface Convent3dViewProps {
     className?: string
@@ -28,10 +28,10 @@ export default function Convent3dView(props: Convent3dViewProps) {
 }
 
 function getClassNames(props: Convent3dViewProps): string {
-    const classNames = ['custom', 'view-Convent3dView']
-    if (typeof props.className === 'string') {
+    const classNames = ["custom", "view-Convent3dView"]
+    if (typeof props.className === "string") {
         classNames.push(props.className)
     }
 
-    return classNames.join(' ')
+    return classNames.join(" ")
 }

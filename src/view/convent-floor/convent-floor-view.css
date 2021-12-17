@@ -47,8 +47,16 @@
 
 .view-ConventFloorView > div > div.total {
     font-size: 80%;
-    color: #000a;
     text-shadow: none;
     pointer-events: none;
     cursor: default;
+    border-radius: 50%;
+    padding: .25em;
+    background-color: #b00;
+    color: #fffe;
+}
+
+.view-ConventFloorView > div > div.total.ok {
+    background-color: #5f3;
+    color: #000e;
 }

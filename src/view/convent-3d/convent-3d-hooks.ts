@@ -1,4 +1,4 @@
-import SwipeGesture, { PanEvent, SwipeEvent } from '../../gestures/swipe'
+import SwipeGesture, { PanEvent, SwipeEvent } from "../../gestures/swipe"
 import {
     AmbientLight as ThreeAmbientLight,
     CanvasTexture as ThreeCanvasTexture,
@@ -12,15 +12,17 @@ import {
     Scene as ThreeScene,
     Texture as ThreeTexture,
     WebGLRenderer as ThreeWebGLRenderer,
-} from 'three'
-import { useEffect, useRef } from 'react'
+} from "three"
+import { useEffect, useRef } from "react"
 
-import { Rooms } from '../../types'
-import RotationManager from './rotation-manager'
+import { Rooms } from "../../types"
+import RotationManager from "./rotation-manager"
 
 export interface Meshes {
     convent: ThreeGroup
 }
+
+const SLEEPER_PER_FACE = 11
 
 export function useCanvas3D(
     refCanvas: React.MutableRefObject<HTMLCanvasElement | null>,
@@ -79,7 +81,7 @@ function initScene(
     const camera = makeCamera(aspect)
     const { ambientLight, directionalLight } = makeLights()
     const scene = new ThreeScene()
-    scene.background = new ThreeColor('#def')
+    scene.background = new ThreeColor("#def")
     const root = new ThreeGroup()
 
     const { faceN, faceE, faceS, faceW } = makeFacesWithTotals()
@@ -227,20 +229,20 @@ function makeFace(quarter: 0 | 1 | 2 | 3, texture: ThreeTexture) {
 
 function makeFaceTexture(value: number): ThreeTexture {
     const SIZE = 128
-    const canvas = document.createElement('canvas')
+    const canvas = document.createElement("canvas")
     canvas.width = SIZE
     canvas.height = SIZE
-    const ctx = canvas.getContext('2d')
-    if (!ctx) throw Error('Unable to create context 2D!')
+    const ctx = canvas.getContext("2d")
+    if (!ctx) throw Error("Unable to create context 2D!")
     ctx.clearRect(0, 0, SIZE, SIZE)
     ctx.font = `bold ${SIZE / 2}px sans-serif`
     const text = `${value}`
     const measure = ctx.measureText(text)
     const x = (SIZE - measure.width) * 0.5
     const y = SIZE * 0.75
-    ctx.fillStyle = value === 11 ? '#0f0b' : '#f00b'
+    ctx.fillStyle = value === SLEEPER_PER_FACE ? "#5f3b" : "#b00b"
     ctx.fillText(text, x, y)
-    ctx.strokeStyle = '#000'
+    ctx.strokeStyle = "#000"
     ctx.lineWidth = SIZE * 0.03
     ctx.strokeText(text, x, y)
     const texture = new ThreeCanvasTexture(canvas)

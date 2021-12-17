@@ -5,7 +5,7 @@ body {
     height: 100%;
     overflow: hidden;
     font-size: 5vmin;
-    font-family: sans-serif;
+    font-family: fuzzy-bubbles, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #def;
@@ -29,4 +29,20 @@ hr {
         currentColor,
         transparent
     );
+}
+
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
+button {
+    font: inherit;
+    border: inherit;
+    background-color: #f90;
+    font-variant: small-caps;
+    line-height: 2em;
+    padding: 0 1em;
+    font-weight: bold;
+    border-radius: .25em;
+    box-shadow: 0 .125em .125em #0007;
 }
