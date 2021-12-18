@@ -1,7 +1,7 @@
 /**
  * This file has been automatically generated
  * @file translate/translate.ts
- * @date 2021-12-17T15:14:49.160Z
+ * @date 2021-12-18T17:22:58.720Z
  */
 /* eslint-disable prettier/prettier */
 /* eslint-disable lines-between-class-members */
@@ -22,6 +22,7 @@ export class AppTranslations extends TranslateBase {
         )
     }
 
+    get backButton() { return this._("back-button") }
     get close() { return this._("close") }
     get howToPlay() { return this._("how-to-play") }
     get intro() { return this._("intro") }
@@ -31,8 +32,11 @@ export class AppTranslations extends TranslateBase {
     get ruleSouth() { return this._("rule-south") }
     ruleSum(...args: string[]) { return this._("rule-sum", ...args) }
     get ruleWest() { return this._("rule-west") }
+    get secondRoundButton() { return this._("second-round-button") }
+    get startButton() { return this._("start-button") }
     get title() { return this._("title") }
     get wellDone1() { return this._("well-done1") }
+    get wellDone2() { return this._("well-done2") }
 }
 
 export default new AppTranslations()

@@ -1,0 +1,23 @@
+digraph G {
+    splines="TRUE";
+
+    node [shape="box",style="filled",fillcolor="#ffddbb"];
+
+    /* Relationships */
+    Intro -> FirstRound [label="close\n(init 36)"]
+    FirstRound -> FirstRules [label="open"]
+    FirstRules -> FirstRound [label="close"]
+    FirstRound -> FirstVictory [label="goal"]
+    FirstVictory -> SecondRound [label="close\n(init 27)"]
+    SecondRound -> SecondRules [label="open"]
+    SecondRules -> SecondRound [label="close"]
+    SecondRound -> SecondVictory [label="goal"]
+    SecondVictory -> Intro [label="close"]
+
+    FirstRound[shape="ellipse",fillcolor="pink",style="filled"];
+    SecondRound[shape="ellipse",fillcolor="pink",style="filled"];
+
+    /* Ranks */
+    { rank=same; FirstRound; FirstVictory };
+    { rank=same; SecondRound; SecondVictory };
+}

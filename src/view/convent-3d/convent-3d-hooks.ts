@@ -58,12 +58,11 @@ export function useCanvas3D(
         )
         refUpdateTotals.current = updateTotals
         const rotationManager = new RotationManager(paint)
-        const behavior = new SwipeGesture(
-            canvas,
-            rotationManager.handleStart,
-            rotationManager.handlePan,
-            rotationManager.handleSwipe
-        )
+        const behavior = new SwipeGesture(canvas, {
+            onStart: rotationManager.handleStart,
+            onPan: rotationManager.handlePan,
+            onSwipe: rotationManager.handleSwipe,
+        })
         return () => behavior.detach()
     }, [refCanvas])
     useEffect(() => {

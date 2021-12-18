@@ -1,6 +1,6 @@
-import './digicode-view.css'
+import "./digicode-view.css"
 
-import * as React from 'react'
+import * as React from "react"
 
 export interface DigicodeViewProps {
     className?: string
@@ -30,12 +30,12 @@ export default function DigicodeView(props: DigicodeViewProps) {
             )
             div.style.left = `${x}px`
             div.style.top = `${y}px`
-            div.style.opacity = '1'
+            div.style.opacity = "1"
         }
     }, [refDiv, props.x, props.y])
     return (
         <div ref={refDiv} className={getClassNames(props)}>
-            {DIGITS.map((digit) => (
+            {DIGITS.map(digit => (
                 <button key={digit} onClick={() => props.onClick(digit)}>
                     {digit}
                 </button>
@@ -45,12 +45,12 @@ export default function DigicodeView(props: DigicodeViewProps) {
 }
 
 function getClassNames(props: DigicodeViewProps): string {
-    const classNames = ['custom', 'inputDigit-DigicodeView']
-    if (typeof props.className === 'string') {
+    const classNames = ["custom", "inputDigit-DigicodeView"]
+    if (typeof props.className === "string") {
         classNames.push(props.className)
     }
 
-    return classNames.join(' ')
+    return classNames.join(" ")
 }
 
 function clamp(value: number, min: number, max: number): number {

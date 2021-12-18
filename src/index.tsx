@@ -11,11 +11,13 @@ import FloorPng from "./gfx/floor.png"
 import FloorWebp from "./gfx/floor.webp"
 import React from "react"
 import ReactDOM from "react-dom"
+import Translate from "./translate"
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 start()
 
 async function start() {
+    await Translate.$loadDefaultLang()
     const compassTexture = await loadTexture(CompassPng)
     const floorImage = await loadImage(FloorWebp, FloorPng)
     const conventMesh = await loadGLTF(ConventGLTF)

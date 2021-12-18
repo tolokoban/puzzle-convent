@@ -14,42 +14,48 @@ export interface SwipeEvent extends PanEvent {
     vectorY: number
 }
 
+interface Handlers {
+    onStart?(): void
+    onPan?(evt: PanEvent): void
+    onSwipe?(evt: SwipeEvent): void
+}
+
 export default class SwipeGesture {
     /**
      * If timestamp is diffferent of 0, it is the time when the element
      * has been touched.
      */
     private timeStamp = 0
+
     /**
      * Coords of the touch in percentage of the size.
      */
     private x = 0
+
     private y = 0
 
     constructor(
         private readonly element: HTMLElement,
-        private readonly onStart: () => void,
-        private readonly onPan: (evt: PanEvent) => void,
-        private readonly onSwipe: (evt: SwipeEvent) => void
+        private readonly handlers: Handlers
     ) {
-        element.addEventListener('pointerdown', this.handlePointerDown, false)
-        element.addEventListener('pointermove', this.handlePointerMove, false)
-        element.addEventListener('pointerup', this.handlePointerUp, false)
+        element.addEventListener("pointerdown", this.handlePointerDown, false)
+        element.addEventListener("pointermove", this.handlePointerMove, false)
+        element.addEventListener("pointerup", this.handlePointerUp, false)
     }
 
     public detach() {
         const { element } = this
         element.removeEventListener(
-            'pointerdown',
+            "pointerdown",
             this.handlePointerDown,
             false
         )
         element.removeEventListener(
-            'pointermove',
+            "pointermove",
             this.handlePointerMove,
             false
         )
-        element.removeEventListener('pointerup', this.handlePointerUp, false)
+        element.removeEventListener("pointerup", this.handlePointerUp, false)
     }
 
     private readonly handlePointerDown = (evt: PointerEvent) => {
@@ -57,6 +63,7 @@ export default class SwipeGesture {
         const [x, y] = this.getCoords(evt)
         this.x = x
         this.y = y
+        this.element.setPointerCapture(evt.pointerId)
         this.onStart()
     }
 
@@ -95,5 +102,23 @@ export default class SwipeGesture {
             (evt.clientX - rect.left) / rect.width,
             (evt.clientY - rect.top) / rect.height,
         ]
+    }
+
+    private readonly onStart = () => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        const { onStart } = this.handlers
+        if (onStart) onStart()
+    }
+
+    private readonly onPan = (evt: PanEvent) => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        const { onPan } = this.handlers
+        if (onPan) onPan(evt)
+    }
+
+    private readonly onSwipe = (evt: SwipeEvent) => {
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        const { onSwipe } = this.handlers
+        if (onSwipe) onSwipe(evt)
     }
 }

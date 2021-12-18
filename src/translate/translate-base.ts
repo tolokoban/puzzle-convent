@@ -1,7 +1,7 @@
 /**
 * This file has been automatically generated
 * @file translate/translate-base.ts
-* @date 2021-12-17T15:14:49.160Z
+* @date 2021-12-18T17:22:58.720Z
 */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const TranslationsConfig = require('./translations/@.json') as {

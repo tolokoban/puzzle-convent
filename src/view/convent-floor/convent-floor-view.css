@@ -31,32 +31,3 @@
     width: var(--inner-size);
     height: var(--inner-size);
 }
-
-.view-ConventFloorView > div > div {
-    color: oldlace;
-    text-shadow: 0.1em 0.1em 0.1em #000;
-    cursor: pointer;
-    transition: 0.3s color;
-    user-select: none;
-    -moz-user-select: none;
-}
-
-.view-ConventFloorView > div > div:hover {
-    color: #fdb;
-}
-
-.view-ConventFloorView > div > div.total {
-    font-size: 80%;
-    text-shadow: none;
-    pointer-events: none;
-    cursor: default;
-    border-radius: 50%;
-    padding: .25em;
-    background-color: #b00;
-    color: #fffe;
-}
-
-.view-ConventFloorView > div > div.total.ok {
-    background-color: #5f3;
-    color: #000e;
-}

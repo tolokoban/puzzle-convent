@@ -1,0 +1,49 @@
+.view-conventFloor-RoomView {
+    position: relative;
+    color: oldlace;
+    text-shadow: 0.1em 0.1em 0.1em #000;
+    cursor: pointer;
+    transition: 0.3s color;
+    user-select: none;
+    -moz-user-select: none;
+}
+
+.view-conventFloor-RoomView div.directions {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    overflow: visible;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s;
+}
+
+.view-conventFloor-RoomView.hover div.directions {
+    opacity: 1;
+}
+
+.view-conventFloor-RoomView div.directions > svg {
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    margin: -.5em;
+    color: #f90;
+}
+
+.view-conventFloor-RoomView div.directions > svg.up {
+    transform: translateY(-1em);
+}
+
+.view-conventFloor-RoomView div.directions > svg.right {
+    transform: translateX(1em);
+}
+
+.view-conventFloor-RoomView div.directions > svg.down {
+    transform: translateY(1em);
+}
+
+.view-conventFloor-RoomView div.directions > svg.left {
+    transform: translateX(-1em);
+}
