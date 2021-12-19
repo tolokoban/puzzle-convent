@@ -38,7 +38,6 @@ export default function RoomView(props: RoomViewProps) {
         <div
             ref={ref}
             className={`${getClassNames(props)} ${hoverClassName}`}
-            key={`room-${props.index}`}
             tabIndex={1}
         >
             <div className="directions">
@@ -59,7 +58,7 @@ function renderArrow(type: string) {
                 fill="currentColor"
                 stroke="#000"
                 strokeWidth={2}
-                d="M1,21H23L12,2Z"
+                d="M1,21L12,16L23,21L12,2Z"
             />
         </svg>
     )
@@ -80,7 +79,7 @@ function useGestures(
             },
             onSwipe(evt) {
                 setHoverClassName("")
-                if (props.value <= 1) return
+                if (props.value < 1) return
 
                 const dir = getDirection(evt)
                 const target = TARGETS[props.index][dir]
@@ -93,7 +92,7 @@ function useGestures(
         return () => {
             behavior.detach()
         }
-    }, [ref])
+    }, [ref, props.value])
     return hoverClassName
 }
 
@@ -107,7 +106,13 @@ function getClassNames(props: RoomViewProps): string {
 }
 
 function getDirection(evt: SwipeEvent) {
+    const NOT_FOUND = -1
+    const THRESHOLD = 1
     const { deltaX, deltaY } = evt
+    console.log('🚀 [room-view] deltaX = ', deltaX) // @FIXME: Remove this line written on 2021-12-19 at 12:36
+    if (Math.abs(deltaX) < THRESHOLD && Math.abs(deltaY) < THRESHOLD)
+        return NOT_FOUND
+
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
         // Horizontal swipe.
         if (deltaX > 0) return RIGHT

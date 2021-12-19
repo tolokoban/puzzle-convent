@@ -1,10 +1,12 @@
 {
   "back-button": "Back to play",
   "close": "Close",
-  "how-to-play": "# How to play?\n\nTap a room on the floors plans to change the number of prisoners.\n\nSlide the house left and right to see the number of prisoners per face.",
+  "how-to-play": "# How to play?\n\n* Swipe a room to move a prisoner to the next room.\n* Slide the house left and right to see the number of prisoners per face.",
   "intro": "Everyone is under stress in the Red Goat penitentiary, for which you are the most recent person in charge.\n\nThe General is coming to do his ten-year inspection next week and no one has warned you.\nEverything will have to be perfect because the General is rather finicky.\n\nThe penitentiary has **16 rooms** spread over **2 floors** and contains **36 prisoners**: **12 on the first floor** and **24 on the second**.\nTo satisfy the General, it is necessary that:\n\n* No room is empty.\n* The 6 rooms overlooking the **North** must contain **11 prisoners** in all.\n* Ditto for the view to the **Sub**, to the **East** and to the **West**.\n",
+  "restart": "Redo a game",
   "rule-double": "The **second floor** should accommodate **twice** as many prisoners as the **first floor**.",
   "rule-east": "Rooms with a **East** side window must have a total of **11** prisoners.",
+  "rule-empty": "No room can be empty.",
   "rule-north": "Rooms with a **North** side window must have a total of **11** prisoners.",
   "rule-south": "Rooms with a **South** side window must have a total of **11** prisoners.",
   "rule-sum": "The total number of prisoners must be **$1**.",
@@ -13,5 +15,5 @@
   "start-button": "Let's do it!",
   "title": "Title",
   "well-done1": "# Well done!\n\nYou managed to arrange all the prisoners according to the penitentiary strict rules.  \nNo doubts that you should be promoted for this!\n\nUnfortunately, the very next night, **9 prisoners** escaped because of a broken door lock.\n\nYou made sure to change all the locks to prevent any other evasions,\nbut now you have to arrange the remaining **27 prisoners** in the rooms, by following the same strict rules.\n\nBut hurry up, because the general will come tomorrow.",
-  "well-done2": "Well done ! You live up to your reputation."
+  "well-done2": "Well done ! You live up to your reputation.\n\nThe General has agreed to examine your transfer request.\nYou may soon be leaving this desert."
 }

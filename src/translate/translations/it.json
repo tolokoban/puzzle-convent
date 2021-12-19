@@ -1,10 +1,12 @@
 {
   "back-button": "Torna a giocare",
   "close": "Chiudere",
-  "how-to-play": "# Come si gioca?\n\nTocca una stanza nelle planimetrie per modificare il numero di prigionieri.\n\nFai scorrere la casa a sinistra ea destra per vedere il numero di prigionieri per faccia.",
+  "how-to-play": "# Come giocare?\n\n* Scorri una stanza per spostare un prigioniero nella stanza successiva.\n* Fai scorrere la casa a sinistra e a destra per vedere il numero di prigionieri per faccia.",
   "intro": "Tutti sono sotto stress nel penitenziario di Capra Rossa, di cui sei il recente responsabile.\n\nIl Generale verrà a fare la sua ispezione decennale la prossima settimana e nessuno ti ha avvertito.\nTutto dovrà essere perfetto perché il Generale è piuttosto pignolo.\n\nIl penitenziario dispone di **16 stanze** distribuite su **2 piani** e contiene **36 detenuti**: **12 al primo piano** e **24 al secondo**.\nPer soddisfare il Generale, è necessario che:\n\n* Nessuna stanza sia vuota.\n* Le 6 stanze con vista **Nord** devono contenere **11 detenuti** in tutto.\n* Idem per la vista al **Sub**, all'**Est** e all'**Ovest**.\n",
+  "restart": "Rifare un gioco",
   "rule-double": "Il **secondo piano** dovrebbe ospitare il **doppio** delle prigionieri rispetto al **primo piano**.",
   "rule-east": "Le camere con finestra sul lato **Est** devono avere un totale di **11** prigionieri.",
+  "rule-empty": "Nessuna stanza può essere vuota.",
   "rule-north": "Le camere con finestra sul lato **Nord** devono avere un totale di **11** prigionieri.",
   "rule-south": "Le camere con finestra sul lato **Sub** devono avere un totale di **11** prigionieri.",
   "rule-sum": "Il numero totale di prigionieri deve essere **$1**.",
@@ -13,5 +15,5 @@
   "start-button": "Facciamolo!",
   "title": "Titolo",
   "well-done1": "# Molto bene!\n\nSei riuscito a sistemare tutti i prigionieri secondo le rigide regole del penitenziario.\nNon c'è dubbio che dovresti essere promosso per questo!\n\nSfortunatamente, la notte successiva, **9 prigionieri** sono fuggiti a causa di una serratura rotta.\n\nTi sei assicurato di cambiare tutte le serrature per evitare altre evasioni,\nma ora devi sistemare i restanti **27 prigionieri** nelle stanze, seguendo le stesse rigide regole.\n\nMa sbrigati, perché domani verrà il generale.",
-  "well-done2": "Molto bene ! Sei all'altezza della tua reputazione."
+  "well-done2": "Molto bene ! Sei all'altezza della tua reputazione.\n\nIl Generale ha accettato di esaminare la tua richiesta di trasferimento.\nPotresti presto lasciare questo deserto."
 }

@@ -21,7 +21,8 @@
 }
 
 .view-conventFloor-RoomView.hover div.directions {
-    opacity: 1;
+    opacity: .9;
+    z-index: 9;
 }
 
 .view-conventFloor-RoomView div.directions > svg {
@@ -37,13 +38,13 @@
 }
 
 .view-conventFloor-RoomView div.directions > svg.right {
-    transform: translateX(1em);
+    transform: translateX(1em) rotate(90deg);
 }
 
 .view-conventFloor-RoomView div.directions > svg.down {
-    transform: translateY(1em);
+    transform: translateY(1em) rotate(180deg);
 }
 
 .view-conventFloor-RoomView div.directions > svg.left {
-    transform: translateX(-1em);
+    transform: translateX(-1em) rotate(-90deg);
 }

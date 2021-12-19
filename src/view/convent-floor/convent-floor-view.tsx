@@ -28,6 +28,7 @@ export default function ConventFloorView(props: ConventFloorViewProps) {
             <div>
                 {FIRST_ROOMS.map(index => (
                     <RoomView
+                        key={`room-${index}`}
                         index={index}
                         value={rooms[index]}
                         onMove={onMove}
@@ -36,6 +37,7 @@ export default function ConventFloorView(props: ConventFloorViewProps) {
                 <div> </div>
                 {LAST_ROOMS.map(index => (
                     <RoomView
+                        key={`room-${index}`}
                         index={index}
                         value={rooms[index]}
                         onMove={onMove}

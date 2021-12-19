@@ -74,7 +74,7 @@ function renderPreviewPane(
     roomsFloor1: Rooms,
     roomsFloor2: Rooms,
     props: AppViewProps,
-    { ruleN, ruleE, ruleS, ruleW }: Rules,
+    rules: Rules,
     onOpenInstruction: () => void
 ) {
     return (
@@ -85,24 +85,19 @@ function renderPreviewPane(
                 meshes={props.assets.meshes}
                 compassTexture={props.assets.textures.compass}
             />
-            {renderFooter(ruleN, ruleE, ruleS, ruleW, onOpenInstruction)}
+            {renderFooter(rules, onOpenInstruction)}
         </div>
     )
 }
 
-function renderFooter(
-    ruleN: boolean,
-    ruleE: boolean,
-    ruleS: boolean,
-    ruleW: boolean,
-    onOpenInstruction: () => void
-) {
+function renderFooter(rules: Rules, onOpenInstruction: () => void) {
     return (
         <footer onClick={onOpenInstruction}>
-            <div className={ruleN ? "yes" : "no"}>N</div>
-            <div className={ruleE ? "yes" : "no"}>E</div>
-            <div className={ruleS ? "yes" : "no"}>S</div>
-            <div className={ruleW ? "yes" : "no"}>W</div>
+            <div className={rules.ruleN ? "yes" : "no"}>N</div>
+            <div className={rules.ruleE ? "yes" : "no"}>E</div>
+            <div className={rules.ruleS ? "yes" : "no"}>S</div>
+            <div className={rules.ruleW ? "yes" : "no"}>W</div>
+            <div className={rules.ruleEmpty ? "yes" : "no"}>∅</div>
         </footer>
     )
 }

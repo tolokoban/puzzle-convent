@@ -25,51 +25,54 @@ const INITIAL_STATE: State = {
     ...initRoomsForFirstRound(),
 }
 
+let currentState: State = INITIAL_STATE
+
 export function useApplicationState() {
     const [state, setState] = useHistoryState("puzzle/convent", INITIAL_STATE)
-    Object.freeze(state)
-    console.log('🚀 [state] state = ', state) // @FIXME: Remove this line written on 2021-12-18 at 22:57
+    currentState = state
     return {
         state,
-        hideInstructions: makeHideInstructions(state, setState),
-        showInstructions: makeShowInstructions(state, setState),
-        movePrisonerOfFloor1(this: void, from: number, to: number) {
-            const roomsFloor1: Rooms = [...state.roomsFloor1]
-            roomsFloor1[from]--
-            roomsFloor1[to]++
-            const { roomsFloor2 } = state
-            setState({
-                ...state,
-                roomsFloor1,
-                step: moveToNextStepIfVictory(
-                    state.step,
-                    roomsFloor1,
-                    roomsFloor2
-                ),
-            })
-        },
-        movePrisonerOfFloor2(this: void, from: number, to: number) {
-            console.log('🚀 [state] from, to = ', from, to) // @FIXME: Remove this line written on 2021-12-18 at 22:53
-            const roomsFloor2: Rooms = [...state.roomsFloor2]
-            roomsFloor2[from]--
-            roomsFloor2[to]++
-            const { roomsFloor1 } = state
-            setState({
-                ...state,
-                roomsFloor2,
-                step: moveToNextStepIfVictory(
-                    state.step,
-                    roomsFloor1,
-                    roomsFloor2
-                ),
-            })
-        },
+        hideInstructions: makeHideInstructions(setState),
+        showInstructions: makeShowInstructions(setState),
+        movePrisonerOfFloor1: makeMovePrisonerOfFloor1(setState),
+        movePrisonerOfFloor2: makeMovePrisonerOfFloor2(setState),
         rules: checkRules(state),
     }
 }
 
-function makeShowInstructions(state: State, setState: (value: State) => void) {
+function makeMovePrisonerOfFloor1(setState: (value: State) => void) {
+    return (from: number, to: number) => {
+        const state = currentState
+        const roomsFloor1: Rooms = [...state.roomsFloor1]
+        roomsFloor1[from]--
+        roomsFloor1[to]++
+        const { roomsFloor2 } = state
+        setState({
+            ...state,
+            roomsFloor1,
+            step: moveToNextStepIfVictory(state.step, roomsFloor1, roomsFloor2),
+        })
+    }
+}
+
+function makeMovePrisonerOfFloor2(setState: (value: State) => void) {
+    return (from: number, to: number) => {
+        const state = currentState
+        const roomsFloor2: Rooms = [...state.roomsFloor2]
+        roomsFloor2[from]--
+        roomsFloor2[to]++
+        const { roomsFloor1 } = state
+        setState({
+            ...state,
+            roomsFloor2,
+            step: moveToNextStepIfVictory(state.step, roomsFloor1, roomsFloor2),
+        })
+    }
+}
+
+function makeShowInstructions(setState: (value: State) => void) {
     return () => {
+        const state = currentState
         switch (state.step) {
             case StepEnum.FirstRound:
                 return setState({ ...state, step: StepEnum.FirstRules })
@@ -83,8 +86,9 @@ function makeShowInstructions(state: State, setState: (value: State) => void) {
     }
 }
 
-function makeHideInstructions(state: State, setState: (value: State) => void) {
+function makeHideInstructions(setState: (value: State) => void) {
     return () => {
+        const state = currentState
         switch (state.step) {
             case StepEnum.Introduction:
                 setState({
@@ -131,19 +135,28 @@ function makeHideInstructions(state: State, setState: (value: State) => void) {
 function initRoomsForFirstRound() {
     return {
         // eslint-disable-next-line no-magic-numbers
-        roomsFloor1: [1, 2, 1, 2, 2, 1, 2, 1] as Rooms,
+        roomsFloor1: randomFloor(12),
         // eslint-disable-next-line no-magic-numbers
-        roomsFloor2: [3, 3, 1, 5, 5, 1, 5, 1] as Rooms,
+        roomsFloor2: randomFloor(24),
     }
 }
 
 function initRoomsForSecondRound() {
     return {
         // eslint-disable-next-line no-magic-numbers
-        roomsFloor1: [1, 1, 1, 1, 9, 1, 1, 1] as Rooms,
+        roomsFloor1: randomFloor(9),
         // eslint-disable-next-line no-magic-numbers
-        roomsFloor2: [3, 2, 3, 1, 1, 4, 5, 3] as Rooms,
+        roomsFloor2: randomFloor(18),
     }
+}
+
+function randomFloor(prisonersCount: number): Rooms {
+    const rooms: Rooms = [0, 0, 0, 0, 0, 0, 0, 0]
+    for (let i = 0; i < prisonersCount; i++) {
+        const k = Math.floor(Math.random() * rooms.length)
+        rooms[k]++
+    }
+    return rooms
 }
 
 function getStepName(step: StepEnum) {

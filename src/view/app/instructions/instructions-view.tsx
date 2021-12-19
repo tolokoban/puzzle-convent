@@ -129,6 +129,7 @@ function renderStepRules(
             {renderRuleDetail("E", Translate.ruleEast, rules.ruleE)}
             {renderRuleDetail("S", Translate.ruleSouth, rules.ruleS)}
             {renderRuleDetail("W", Translate.ruleWest, rules.ruleW)}
+            {renderRuleDetail("∅", Translate.ruleEmpty, rules.ruleEmpty)}
             <button onClick={onClose}>{Translate.backButton}</button>
         </>
     )
