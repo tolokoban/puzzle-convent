@@ -1,4 +1,3 @@
-import SwipeGesture, { PanEvent, SwipeEvent } from "../../gestures/swipe"
 import {
     AmbientLight as ThreeAmbientLight,
     CanvasTexture as ThreeCanvasTexture,
@@ -17,12 +16,13 @@ import { useEffect, useRef } from "react"
 
 import { Rooms } from "../../types"
 import RotationManager from "./rotation-manager"
+import SwipeGesture from "../../gestures/swipe"
 
 export interface Meshes {
     convent: ThreeGroup
 }
 
-const SLEEPER_PER_FACE = 11
+const PRISONER_PER_FACE = 11
 
 export function useCanvas3D(
     refCanvas: React.MutableRefObject<HTMLCanvasElement | null>,
@@ -41,12 +41,10 @@ export function useCanvas3D(
             /* Empty function */
         }
     )
-    const [a, b, c, d, e, f, g, h] = roomsFloor1
-    const [A, B, C, D, E, F, G, H] = roomsFloor2
-    const totalN = a + b + c + A + B + C
-    const totalE = c + e + h + C + E + H
-    const totalS = f + g + h + F + G + H
-    const totalW = a + d + f + A + D + F
+    const { totalN, totalE, totalS, totalW } = computeTotalsPerFaces(
+        roomsFloor1,
+        roomsFloor2
+    )
     useEffect(() => {
         const canvas = refCanvas.current
         if (!canvas) return undefined
@@ -56,6 +54,9 @@ export function useCanvas3D(
             meshes,
             compassTexture
         )
+        const observer = new ResizeObserver(() => paint())
+        observer.observe(canvas)
+
         refUpdateTotals.current = updateTotals
         const rotationManager = new RotationManager(paint)
         const behavior = new SwipeGesture(canvas, {
@@ -63,11 +64,24 @@ export function useCanvas3D(
             onPan: rotationManager.handlePan,
             onSwipe: rotationManager.handleSwipe,
         })
-        return () => behavior.detach()
+        return () => {
+            observer.unobserve(canvas)
+            behavior.detach()
+        }
     }, [refCanvas])
     useEffect(() => {
         refUpdateTotals.current(totalN, totalE, totalS, totalW)
     }, [refUpdateTotals, totalN, totalE, totalS, totalW])
+}
+
+function computeTotalsPerFaces(roomsFloor1: Rooms, roomsFloor2: Rooms) {
+    const [a, b, c, d, e, f, g, h] = roomsFloor1
+    const [A, B, C, D, E, F, G, H] = roomsFloor2
+    const totalN = a + b + c + A + B + C
+    const totalE = c + e + h + C + E + H
+    const totalS = f + g + h + F + G + H
+    const totalW = a + d + f + A + D + F
+    return { totalN, totalE, totalS, totalW }
 }
 
 function initScene(
@@ -108,10 +122,10 @@ function makeUpdateTotals(
     faceW: ThreeMesh<ThreePlaneGeometry, ThreeMeshPhongMaterial>,
     paint: (newAngle?: number | undefined) => void
 ) {
-    let lastTotalN = 0
-    let lastTotalE = 0
-    let lastTotalS = 0
-    let lastTotalW = 0
+    let lastTotalN = -1
+    let lastTotalE = -1
+    let lastTotalS = -1
+    let lastTotalW = -1
     const updateTotals = (
         totalN: number,
         totalE: number,
@@ -123,15 +137,15 @@ function makeUpdateTotals(
             faceN.material.map = makeFaceTexture(totalN)
         }
         if (lastTotalE !== totalE) {
-            lastTotalE = totalN
+            lastTotalE = totalE
             faceE.material.map = makeFaceTexture(totalE)
         }
         if (lastTotalS !== totalS) {
-            lastTotalS = totalN
+            lastTotalS = totalS
             faceS.material.map = makeFaceTexture(totalS)
         }
         if (lastTotalW !== totalW) {
-            lastTotalW = totalN
+            lastTotalW = totalW
             faceW.material.map = makeFaceTexture(totalW)
         }
         window.requestAnimationFrame(() => paint())
@@ -239,7 +253,7 @@ function makeFaceTexture(value: number): ThreeTexture {
     const measure = ctx.measureText(text)
     const x = (SIZE - measure.width) * 0.5
     const y = SIZE * 0.75
-    ctx.fillStyle = value === SLEEPER_PER_FACE ? "#5f3b" : "#b00b"
+    ctx.fillStyle = value === PRISONER_PER_FACE ? "#5f3b" : "#b00b"
     ctx.fillText(text, x, y)
     ctx.strokeStyle = "#000"
     ctx.lineWidth = SIZE * 0.03
