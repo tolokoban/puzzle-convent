@@ -1,4 +1,5 @@
 import "./index.css"
+import "./theme.css"
 import "./fonts/fuzzy-bubbles.css"
 
 import { loadGLTF, loadImage, loadTexture } from "./loader"
@@ -17,10 +18,20 @@ import Translate from "./translate"
 start()
 
 async function start() {
+    const container = document.getElementById("progress-container")
+    const progress = document.getElementById("progress")
+    if (!container || !progress) return
+
+    container.classList.add("show")
+    progress.setAttribute("value", "1")
     await Translate.$loadDefaultLang()
+    progress.setAttribute("value", "2")
     const compassTexture = await loadTexture(CompassPng)
+    progress.setAttribute("value", "3")
     const floorImage = await loadImage(FloorWebp, FloorPng)
+    progress.setAttribute("value", "4")
     const conventMesh = await loadGLTF(ConventGLTF)
+    progress.setAttribute("value", "5")
     const assets: Assets = {
         images: {
             floor: floorImage,
@@ -36,6 +47,7 @@ async function start() {
         <AppView assets={assets} />,
         document.getElementById("root")
     )
+    document.body.removeChild(container)
     removeSplashScreen()
 }
 

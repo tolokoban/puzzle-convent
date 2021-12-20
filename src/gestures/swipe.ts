@@ -15,9 +15,10 @@ export interface SwipeEvent extends PanEvent {
 }
 
 interface Handlers {
-    onStart?(): void
-    onPan?(evt: PanEvent): void
-    onSwipe?(evt: SwipeEvent): void
+    onStart?(this: void): void
+    onPan?(this: void, evt: PanEvent): void
+    onSwipe?(this: void, evt: SwipeEvent): void
+    onEnd?(this: void): void
 }
 
 export default class SwipeGesture {
@@ -34,6 +35,8 @@ export default class SwipeGesture {
 
     private y = 0
 
+    private savedTouchAction = ""
+
     constructor(
         private readonly element: HTMLElement,
         private readonly handlers: Handlers
@@ -41,6 +44,8 @@ export default class SwipeGesture {
         element.addEventListener("pointerdown", this.handlePointerDown, false)
         element.addEventListener("pointermove", this.handlePointerMove, false)
         element.addEventListener("pointerup", this.handlePointerUp, false)
+        element.addEventListener("pointercancel", this.onEnd)
+        element.addEventListener("contextmenu", this.handleContextMenu)
     }
 
     public detach() {
@@ -56,6 +61,14 @@ export default class SwipeGesture {
             false
         )
         element.removeEventListener("pointerup", this.handlePointerUp, false)
+        element.removeEventListener("pointercancel", this.onEnd)
+        element.removeEventListener("contextmenu", this.handleContextMenu)
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    private readonly handleContextMenu = (evt: Event) => {
+        evt.preventDefault()
+        evt.stopPropagation()
     }
 
     private readonly handlePointerDown = (evt: PointerEvent) => {
@@ -64,6 +77,8 @@ export default class SwipeGesture {
         this.x = x
         this.y = y
         this.element.setPointerCapture(evt.pointerId)
+        this.savedTouchAction = this.element.style.touchAction
+        this.element.style.touchAction = "none"
         this.onStart()
     }
 
@@ -80,7 +95,8 @@ export default class SwipeGesture {
     }
 
     private readonly handlePointerUp = (evt: PointerEvent) => {
-        const { timeStamp, onSwipe } = this
+        this.element.style.touchAction = this.savedTouchAction
+        const { timeStamp, onSwipe, onEnd } = this
         const [x, y] = this.getCoords(evt)
         const deltaX = x - this.x
         const deltaY = y - this.y
@@ -92,6 +108,7 @@ export default class SwipeGesture {
             vectorY: deltaY / deltaTime,
         }
         onSwipe(event)
+        onEnd()
         this.timeStamp = 0
     }
 
@@ -105,20 +122,22 @@ export default class SwipeGesture {
     }
 
     private readonly onStart = () => {
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         const { onStart } = this.handlers
         if (onStart) onStart()
     }
 
     private readonly onPan = (evt: PanEvent) => {
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         const { onPan } = this.handlers
         if (onPan) onPan(evt)
     }
 
     private readonly onSwipe = (evt: SwipeEvent) => {
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         const { onSwipe } = this.handlers
         if (onSwipe) onSwipe(evt)
+    }
+
+    private readonly onEnd = () => {
+        const { onEnd } = this.handlers
+        if (onEnd) onEnd()
     }
 }

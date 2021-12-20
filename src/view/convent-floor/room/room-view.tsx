@@ -75,10 +75,11 @@ function useGestures(
 
         const behavior = new SwipeGesture(div, {
             onStart() {
-                setHoverClassName("hover")
+                if (props.value > 0) {
+                    setHoverClassName("hover")
+                }
             },
             onSwipe(evt) {
-                setHoverClassName("")
                 if (props.value < 1) return
 
                 const dir = getDirection(evt)
@@ -86,6 +87,9 @@ function useGestures(
                 if (typeof target === "number") {
                     props.onMove(props.index, target)
                 }
+            },
+            onEnd() {
+                setHoverClassName("")
             },
         })
         // eslint-disable-next-line consistent-return
@@ -109,7 +113,7 @@ function getDirection(evt: SwipeEvent) {
     const NOT_FOUND = -1
     const THRESHOLD = 1
     const { deltaX, deltaY } = evt
-    console.log('🚀 [room-view] deltaX = ', deltaX) // @FIXME: Remove this line written on 2021-12-19 at 12:36
+    console.log("🚀 [room-view] deltaX = ", deltaX) // @FIXME: Remove this line written on 2021-12-19 at 12:36
     if (Math.abs(deltaX) < THRESHOLD && Math.abs(deltaY) < THRESHOLD)
         return NOT_FOUND
 

@@ -161,7 +161,7 @@ function renderStepSecondVictory(
     return (
         <>
             <Markdown>{Translate.wellDone2}</Markdown>
-            <button onClick={onClose}>{Translate.startButton}</button>
+            <button onClick={onClose}>{Translate.restart}</button>
         </>
     )
 }
